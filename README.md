@@ -9,9 +9,15 @@ python manage.py migrate
 python manage.py runserver
 
 ```
-##fron-end
+## fron-end
 ```
 cd frontend
 npm install && npm run
 
 ```
+## google extension
+```
+ npm run build
+
+```
+unpack the dist folder in the google extension and run it.
