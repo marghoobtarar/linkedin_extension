@@ -3,7 +3,6 @@ from rest_framework.views import APIView
 from rest_framework.response import  Response
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from linkedin_scraper import Person, actions
 
 from bs4 import BeautifulSoup as bs
 import time
