@@ -9,6 +9,9 @@ from bs4 import BeautifulSoup as bs
 import time
 import pandas as pd
 
+from selenium.webdriver.support import ui
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.action_chains import ActionChains
 
 # from parsel import Selector
 
@@ -53,6 +56,12 @@ class Automate(APIView):
         SCROLL_PAUSE_TIME = 1.5
 
         # Get scroll height
+
+                
+        #Simulate scrolling to capture all posts
+        SCROLL_PAUSE_TIME = 1.5
+
+        # Get scroll height
         last_height = browser.execute_script("return document.body.scrollHeight")
 
         while True:
@@ -68,9 +77,15 @@ class Automate(APIView):
                 break
             last_height = new_height
 
-
+        elements = ui.WebDriverWait(browser, 10).until(EC.visibility_of_all_elements_located((By.CLASS_NAME, "social-details-social-counts__comments")))
+        for el in elements:
             
-        #Check out page source code
+            action = ActionChains(browser)
+            action.move_to_element(el).perform()
+            el.click()
+
+        time.sleep(5)
+
         company_page = browser.page_source   
 
 
@@ -91,10 +106,12 @@ class Automate(APIView):
         #Use Beautiful Soup to get access tags
         linkedin_soup = bs(company_page.encode("utf-8"), "html")
         linkedin_soup.prettify()
+        # test = linkedin_soup.findAll("li", {"class": "social-details-social-counts__comments social-details-social-counts__item"})
+        # print('the test length', len(test))
 
         #Find the post blocks
         containers = linkedin_soup.findAll("div",{"class":"occludable-update ember-view"})
-        print('the lenght of the data is', len(containers))
+
         # container = containers[0].find("div","feed-shared-update-v2__description-wrapper ember-view")
 
 
@@ -106,7 +123,7 @@ class Automate(APIView):
         video_views = []
         media_links = []
         media_type = []
-
+        comments=[]
 
         #Looping through the posts and appending them to the lists
         for container in containers:
@@ -117,7 +134,26 @@ class Automate(APIView):
                 text = text_box.find("span",{"dir":"ltr"})
                 new_likes = container.findAll("li", {"class":"social-details-social-counts__reactions social-details-social-counts__item"})
                 new_comments = container.findAll("li", {"class": "social-details-social-counts__comments social-details-social-counts__item"})
+                # print('length of comment is', len(new_comments), type(len(new_comments)))
+                        
+                commentor_name = container.findAll("span", {"class": "comments-post-meta comments-comment-item__post-meta"})
+                print('the length of comment', len(commentor_name))
+                try:
 
+                    commentor_name = container.findAll("div", {"class": "feed-shared-text relative"})
+                    print('inside text',len(commentor_name))
+                    dat = []
+                    for e in commentor_name:
+                        print('commentor name',e.text.strip())  
+                        dat.append(e.text.strip())
+                    comments.append(dat)
+                except:
+                    print('no text found')
+
+
+
+
+                
                 #Appending date and text to lists
                 post_dates.append(posted_date.text.strip())
                 post_texts.append(text_box.text.strip())
@@ -182,7 +218,8 @@ class Automate(APIView):
                     pass
 
                 try:
-                    post_comments.append(new_comments[0].text.strip())                           
+                    post_comments.append(new_comments[0].text.strip())    
+                    # print('comment',new_comments[0].text.strip())                       
                 except:                                                           
                     post_comments.append(0)
                     pass
@@ -214,10 +251,10 @@ class Automate(APIView):
             "Post Likes": post_likes,
             "Post Comments": comment_count,
             "Video Views": video_views,
-            "Media Links": media_links
+            "Media Links": media_links,
+            "Comments":comments
         }
         print(data)
 
         df = pd.DataFrame(data)
-
         return Response({'message':df,'data':data})
