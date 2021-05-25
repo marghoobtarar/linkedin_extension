@@ -23,7 +23,7 @@ npm install && npm run
 unpack the dist folder in the google extension and run it.
 
 
-##password error modification
+## password error modification
 
 update the rest_framework_simplejwt.views.py file in environment(env) folder where all the python packages has been installed (line #23 post method)
 ```
