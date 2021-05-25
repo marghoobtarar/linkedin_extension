@@ -46,8 +46,14 @@ class Automate(APIView):
         # send_keys() to simulate key strokes
         
         # actions.login(driver, payload['email'], payload['password']) # if email and password isnt given, it'll prompt in terminal
-        browser.find_element_by_xpath("//span[.='Views of your post']").click()
-        
+        # browser.find_element_by_xpath("//span[.='Views of your post']").click()
+        elements = ui.WebDriverWait(browser, 10).until(EC.visibility_of_all_elements_located((By.CLASS_NAME, "entity-list-item")))
+        i = 0
+        for el in elements:
+            if i == 1:
+                el.click()
+            i += 1
+
 
         # scrapping the posts
 
