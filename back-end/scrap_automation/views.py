@@ -94,26 +94,11 @@ class Automate(APIView):
 
 
 
-        # #Import exception check for message popups (not needed atm)
-        # from selenium.common.exceptions import NoSuchElementException
-        # try:
-        #     if browser.find_element_by_class_name('msg-overlay-list-bubble--is-minimized') is not None:
-        #         pass
-        # except NoSuchElementException:
-        #     try:
-        #         if browser.find_element_by_class_name('msg-overlay-bubble-header') is not None:
-        #             browser.find_element_by_class_name('msg-overlay-bubble-header').click()
-        #     except NoSuchElementException:
-        #         pass
-
 
         #Use Beautiful Soup to get access tags
         linkedin_soup = bs(company_page.encode("utf-8"), "html")
         linkedin_soup.prettify()
-        # test = linkedin_soup.findAll("li", {"class": "social-details-social-counts__comments social-details-social-counts__item"})
-        # print('the test length', len(test))
-
-        #Find the post blocks
+      
         containers = linkedin_soup.findAll("div",{"class":"occludable-update ember-view"})
 
         # container = containers[0].find("div","feed-shared-update-v2__description-wrapper ember-view")
@@ -237,15 +222,6 @@ class Automate(APIView):
             except:
                 pass
 
-            
-        # #Cleaning the dates
-        # cleaned_dates = []
-        # for i in post_dates:
-        #     d = str(i[0:3]).replace('\n\n', '').replace('•','').replace(' ', '')
-        #     cleaned_dates += [d]
-
-
-        #Stripping non-numeric values
         comment_count = []
         for i in post_comments:
             s = str(i).replace('Comment','').replace('s','').replace(' ','')
@@ -257,8 +233,7 @@ class Automate(APIView):
         # scrap the profile portion
         profile = linkedin_soup.find("div",{"class":"scaffold-layout__sticky-content"})
 
-# for container in profile:
-    # print(container)
+
         profile_name = profile.find("h3", {"class": "single-line-truncate t-16 t-black t-bold mt2"})
 
         profile_name = profile_name.text.strip()
@@ -319,6 +294,8 @@ class Automate(APIView):
                 break
 
         time.sleep(5)
+        ui.WebDriverWait(browser, 10).until(EC.visibility_of_all_elements_located((By.CLASS_NAME, "scaffold-layout__sticky-content")))
+
         company_page = browser.page_source   
 
         linkedin_soup = bs(company_page.encode("utf-8"), "html")
