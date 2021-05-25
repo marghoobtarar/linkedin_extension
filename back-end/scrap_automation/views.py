@@ -22,7 +22,7 @@ class Automate(APIView):
     def post(self, request):
         print(request.data)
         payload = request.data
-        browser = webdriver.Chrome('/usr/lib/chromium-browser/chromedriver')
+        browser = webdriver.Chrome('/Applications/mamp/htdocs/linkedin_extension/back-end/scrap_automation/chromedriver')#webdriver.Chrome('/usr/lib/chromium-browser/chromedriver')
 
         browser.get('https://www.linkedin.com')
         username = browser.find_element(By.ID,"session_key")
@@ -42,6 +42,7 @@ class Automate(APIView):
 
         # .click() to mimic button click
         log_in_button.click()
+        time.sleep(10) 
         # send_keys() to simulate key strokes
         
         # actions.login(driver, payload['email'], payload['password']) # if email and password isnt given, it'll prompt in terminal
