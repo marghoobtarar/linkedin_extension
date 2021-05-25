@@ -26,7 +26,7 @@ function App() {
       <input  placeholder='enter the email'  onChange={e=>setEmail(e.target.value)}/>
       </div>
       <div>
-      <input placeholder='enter the password' onChange={e=>setPassword(e.target.value)}/>
+      <input placeholder='enter the password' type='password' onChange={e=>setPassword(e.target.value)}/>
 
       </div>
       <input type='Submit'/>

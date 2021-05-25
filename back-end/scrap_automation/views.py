@@ -42,7 +42,6 @@ class Automate(APIView):
 
         # .click() to mimic button click
         log_in_button.click()
-        time.sleep(10) 
         # send_keys() to simulate key strokes
         
         # actions.login(driver, payload['email'], payload['password']) # if email and password isnt given, it'll prompt in terminal
@@ -58,8 +57,6 @@ class Automate(APIView):
         # Get scroll height
 
                 
-        #Simulate scrolling to capture all posts
-        SCROLL_PAUSE_TIME = 1.5
 
         # Get scroll height
         last_height = browser.execute_script("return document.body.scrollHeight")
@@ -124,6 +121,12 @@ class Automate(APIView):
         media_links = []
         media_type = []
         comments=[]
+        comment_count=[]
+        profile_name=''
+        followers = 0
+        image_link = ''
+
+
 
         #Looping through the posts and appending them to the lists
         for container in containers:
@@ -242,7 +245,98 @@ class Automate(APIView):
             comment_count += [s]
 
 
-            
+        # scrapped profile name and # of followers
+
+        # scrap the profile portion
+        profile = linkedin_soup.find("div",{"class":"scaffold-layout__sticky-content"})
+
+# for container in profile:
+    # print(container)
+        profile_name = profile.find("h3", {"class": "single-line-truncate t-16 t-black t-bold mt2"})
+
+        profile_name = profile_name.text.strip()
+        followers = profile.find("div", {"class": "link-without-visited-state"})
+        followers = followers.text.strip()
+        image_link = profile.find("img", {"class": "pv-recent-activity-top-card__member-photo EntityPhoto-circle-5 ember-view"})
+        image_link = image_link['src']
+        
+
+
+
+
+        userImage = browser.find_elements_by_class_name("pv-recent-activity-top-card__member-photo")
+        for el in userImage:
+            el.click()
+        elements = ui.WebDriverWait(browser, 10).until(EC.visibility_of_all_elements_located((By.CLASS_NAME, "pv-dashboard-section__metric-count")))
+
+        # text = browser.find_element_by_class_name("pv-dashboard-section__metric-count t-32 t-black t-light block")
+        # for el in text:
+        # print(elements)
+
+
+
+        profile_page = browser.page_source   
+
+        profile_soup = bs(profile_page.encode("utf-8"), "html")
+        profile_soup.prettify()
+
+        profiles_data = profile_soup.find("div",{"class":"pv-dashboard-section__card pv-dashboard-section__analytics artdeco-container-card artdeco-card Elevation-0dp"})
+        print('profile data',profiles_data)
+
+        profile_view = ''
+        search_appearance = ''
+        post_views = ''
+
+        profile_view = profiles_data.findAll("span",{"class":"pv-dashboard-section__metric-count"})
+        i = 0
+        for el in profile_view:
+            if i == 0:
+                profile_view = el.text.strip()
+            elif i == 2:
+                search_appearance = el.text.strip()
+            elif i == 1:
+                post_views = el.text.strip()
+            i += 1
+
+
+        about_data = profile_soup.find("div",{"class":"pv-oc ember-view"})
+        about_data = about_data.find("div",{"class":"inline-show-more-text inline-show-more-text--is-collapsed mt4 t-14"})
+        about_data = about_data.text.strip()
+        ## scrapping network connection
+        
+
+        network = browser.find_elements_by_class_name("global-nav__primary-link-text")
+        for el in network:
+            if(el.text == 'My Network'):
+                el.click()
+                break
+
+        time.sleep(5)
+        company_page = browser.page_source   
+
+        linkedin_soup = bs(company_page.encode("utf-8"), "html")
+        linkedin_soup.prettify()
+
+        container = linkedin_soup.find("div",{"class":"scaffold-layout__sticky-content"})
+
+        container = container.findAll("div", {"class": "pl3"})
+
+        people_follow= ''#container[2].text.strip()
+        group_follow = ''#container[3].text.strip()
+        page_like = ''#container[5].text.strip()
+        i = 0
+        for cont in container:
+            if i == 2:
+                people_follow= container[2].text.strip()
+            if i == 3:
+                group_follow = container[3].text.strip()
+            if i == 5:
+                page_like = container[5].text.strip()
+            i += 1
+            # print('line#1',cont.text.strip())
+
+
+
         #Constructing Pandas Dataframe
         data = {
             "Date Posted": post_dates,
@@ -252,9 +346,26 @@ class Automate(APIView):
             "Post Comments": comment_count,
             "Video Views": video_views,
             "Media Links": media_links,
-            "Comments":comments
+            "Comments":comments,
+            # "Name":profile_name,
+            # "Followers":followers,
+            # "Image":image_link
+            "Profile":{
+                "Name":profile_name,
+                "Connections":followers,
+                "Image":image_link,
+                "People_Follow": people_follow,
+                "Group_Follow":group_follow,
+                "Page_Like":page_like,
+                "Profile_view" : profile_view,
+                "Search_appearances": search_appearance,
+                "Post_views" : post_views,
+                "About_me" : about_data
+
+            }
+
         }
         print(data)
 
-        df = pd.DataFrame(data)
-        return Response({'message':df,'data':data})
+        # df = pd.DataFrame(data)
+        return Response({'message':'data has been scrapped','data':data})
