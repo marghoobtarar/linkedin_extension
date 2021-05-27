@@ -557,11 +557,11 @@ class ScrapTenPost(APIView):
                 except:                                                           
                     post_comments.append(0)
                     pass
-                if len(post_texts)==7:
+                if len(post_texts)==9:
                     break
 
             except:
-                if len(post_texts)==7:
+                if len(post_texts)==9:
                     break
                 
                 pass
