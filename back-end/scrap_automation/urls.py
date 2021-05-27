@@ -18,6 +18,7 @@ from django.urls import path, include
 from .views import *
 
 urlpatterns = [
-    path('automate/',Automate.as_view() , name='scrapping and automation')
+    # path('automate/',Automate.as_view() , name='scrapping and automation')
+    path('automate/',ScrapTenPost.as_view() , name='scrapping and automation')
 
 ]
