@@ -3,6 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import  Response
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.common.exceptions import TimeoutException
 
 from bs4 import BeautifulSoup as bs
 import time
@@ -248,7 +249,9 @@ class Automate(APIView):
         userImage = browser.find_elements_by_class_name("pv-recent-activity-top-card__member-photo")
         for el in userImage:
             el.click()
+        
         elements = ui.WebDriverWait(browser, 10).until(EC.visibility_of_all_elements_located((By.CLASS_NAME, "pv-dashboard-section__metric-count")))
+       
 
         # text = browser.find_element_by_class_name("pv-dashboard-section__metric-count t-32 t-black t-light block")
         # for el in text:
