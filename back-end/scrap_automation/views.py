@@ -3,6 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import  Response
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.common.exceptions import TimeoutException
 
 from bs4 import BeautifulSoup as bs
 import time
@@ -23,7 +24,7 @@ class Automate(APIView):
     def post(self, request):
         print(request.data)
         payload = request.data
-        browser = webdriver.Chrome('/usr/lib/chromium-browser/chromedriver')
+        browser = webdriver.Chrome('/Applications/mamp/htdocs/linkedin_extension/back-end/scrap_automation/chromedriver')#webdriver.Chrome('/usr/lib/chromium-browser/chromedriver')
 
         browser.get('https://www.linkedin.com')
         username = browser.find_element(By.ID,"session_key")
@@ -43,7 +44,6 @@ class Automate(APIView):
 
         # .click() to mimic button click
         log_in_button.click()
-        # time.sleep(1000)
         # send_keys() to simulate key strokes
         
         # actions.login(driver, payload['email'], payload['password']) # if email and password isnt given, it'll prompt in terminal
@@ -598,6 +598,8 @@ class ScrapTenPost(APIView):
 
 
    
+        elements = ui.WebDriverWait(browser, 10).until(EC.visibility_of_all_elements_located((By.CLASS_NAME, "pv-dashboard-section__metric-count")))
+       
 
         # text = browser.find_element_by_class_name("pv-dashboard-section__metric-count t-32 t-black t-light block")
         # for el in text:
