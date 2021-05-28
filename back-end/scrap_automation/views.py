@@ -594,7 +594,7 @@ class ScrapTenPost(APIView):
         for el in userImage:
             el.click()
         
-        ui.WebDriverWait(browser, 10).until(EC.visibility_of_all_elements_located((By.CLASS_NAME, "pv-dashboard-section__metric-count")))
+        # ui.WebDriverWait(browser, 10).until(EC.visibility_of_all_elements_located((By.CLASS_NAME, "pv-dashboard-section__metric-count")))
 
 
    
