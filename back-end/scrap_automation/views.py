@@ -361,7 +361,7 @@ class ScrapTenPost(APIView):
     def post(self, request):
         print(request.data)
         payload = request.data
-        browser = webdriver.Chrome('/usr/lib/chromium-browser/chromedriver')
+        browser = webdriver.Chrome('/Applications/mamp/htdocs/linkedin_extension/back-end/scrap_automation/chromedriver')
 
         browser.get('https://www.linkedin.com')
         username = browser.find_element(By.ID,"session_key")
@@ -594,7 +594,7 @@ class ScrapTenPost(APIView):
         for el in userImage:
             el.click()
         
-        ui.WebDriverWait(browser, 10).until(EC.visibility_of_all_elements_located((By.CLASS_NAME, "pv-dashboard-section__metric-count")))
+        # ui.WebDriverWait(browser, 10).until(EC.visibility_of_all_elements_located((By.CLASS_NAME, "pv-dashboard-section__metric-count")))
 
 
    
